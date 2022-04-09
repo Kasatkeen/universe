@@ -15,23 +15,28 @@ class Canvas {
     xs(x) {
         return this.canvas.width * (x - this.WIN.LEFT) / this.WIN.WIDTH
     }
+
     ys(y) {
         return this.canvas.height - (this.canvas.height * (y - this.WIN.BOTTOM) / this.WIN.HEIGHT)
     }
-    sx = function(x) {
+
+    sx(x) {
         return this.WIN.WIDTH * x / this.canvas.width;
     }
-    sy = function(y) {
+
+    sy(y) {
         return this.WIN.HEIGHT * y / this.canvas.height;
     }
-    clear() {
-        this.context.fillStyle = 'white';
+
+    clear(color = 'white') {
+        this.context.fillStyle = color;
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    line(x1, y1, x2, y2, color, width, isDash) {
+
+    line(x1, y1, x2, y2, color = 'darkblue', width = 1, isDash) {
         this.context.beginPath();
-        this.context.strokeStyle = color || 'darkblue';
-        this.context.lineWidth = width || 1;
+        this.context.strokeStyle = color;
+        this.context.lineWidth = width;
         if (isDash) {
             this.context.setLineDash([7, 5]);
         } else {
@@ -41,14 +46,16 @@ class Canvas {
         this.context.lineTo(this.xs(x2), this.ys(y2));
         this.context.stroke();
     }
-    arc(x1, y1, r, color) {
+
+    dot(x1, y1, r = 2, color = 'black') {
         this.context.beginPath();
-        this.context.strokeStyle = color || 'black';
-        this.context.fillStyle = color || 'black';
+        this.context.strokeStyle = color;
+        this.context.fillStyle = color;
         this.context.arc(this.xs(x1), this.ys(y1), r, 0, Math.PI * 2, true);
         this.context.stroke();
         this.context.fill();
     }
+
     duga(x1, y1, r, start, end) {
         this.context.beginPath();
         this.context.strokeStyle = 'red';
@@ -56,11 +63,13 @@ class Canvas {
         this.context.arc(this.xs(x1), this.ys(y1), r, start, end, true);
         this.context.stroke();
     }
+
     text(str, x, y, color) {
         this.context.font = "18px muller";
         this.context.fillStyle = color || 'black';
         this.context.fillText(str, this.xs(x), this.ys(y));
     }
+
     polygon(points, color = '#ff000050') {
         this.context.beginPath();
         this.context.fillStyle = color;

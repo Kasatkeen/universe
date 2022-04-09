@@ -1,13 +1,13 @@
 Figure.prototype.cube = () => {
 	const points=[
-        new Point(0, 0, 0),
-        new Point(0, 0, 20),
-        new Point(20, 0, 20),
-        new Point(20, 0, 0),
-        new Point(0, 20, 0),
-        new Point(0, 20, 20),
-        new Point(20, 20, 0),
-        new Point(20, 20, 20),
+        new Point(-10, -10, 0),
+        new Point(-10, -10, 20),
+        new Point(10, -10, 20),
+        new Point(10, -10, 0),
+        new Point(-10, 10, 0),
+        new Point(-10, 10, 20),
+        new Point(10, 10, 0),
+        new Point(10, 10, 20),
     ];
 	const edges=[
 		new Edge(0, 1),
@@ -15,14 +15,15 @@ Figure.prototype.cube = () => {
 		new Edge(0, 4),
 		new Edge(5, 1),
 		new Edge(5, 4),
-		new Edge(5, 6),
+		new Edge(5, 7),
 		new Edge(2, 3),
-		new Edge(2, 6),
+		new Edge(2, 7),
 		new Edge(2, 1),
-		new Edge(7, 3),
-		new Edge(7, 6),
-		new Edge(7, 4),
+		new Edge(6, 3),
+		new Edge(6, 4),
+		new Edge(6, 7),
 	];
+	
     const animation = [{
 		method: 'rotateOy',
 		value: Math.PI / 1800, 

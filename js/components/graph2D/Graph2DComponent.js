@@ -155,7 +155,7 @@ class Graph2DComponent extends Component {
         // 0Y
         this.canvas.line(0, BOTTOM, 0, BOTTOM + HEIGHT, 'black', 1);
         //точка
-        this.canvas.arc(0, 0, 2);
+        this.canvas.dot(0, 0, 2);
         //текст
         this.canvas.text('0', 0.2, -0.6);
         this.canvas.text('1', 0.2, 0.8);

@@ -13,13 +13,13 @@ class AppComponent extends Component {
         this.graph2D = new Graph2DComponent({
             id: 'graph2D',
             parent: this.id,
-            template: template.graph2DTemplate
+            template: template.graph2DTemplate,
+            className: 'hide'
         });
         this.graph3D = new Graph3DComponent({
             id: 'graph3d',
             parent: this.id,
             template: template.graph3DTemplate,
-            className: 'hide',
         });
         this.calculator = new CalculatorComponent({
             id: 'calculator',
