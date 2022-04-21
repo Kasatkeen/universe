@@ -33,7 +33,7 @@ class Canvas {
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    line(x1, y1, x2, y2, color = 'darkblue', width = 1, isDash) {
+    line(x1, y1, x2, y2, color = 'blue', width = 1, isDash) {
         this.context.beginPath();
         this.context.strokeStyle = color;
         this.context.lineWidth = width;
@@ -64,8 +64,8 @@ class Canvas {
         this.context.stroke();
     }
 
-    text(str, x, y, color) {
-        this.context.font = "18px muller";
+    text(str, x, y, color, font = "18px muller") {
+        this.context.font = font;
         this.context.fillStyle = color || 'black';
         this.context.fillText(str, this.xs(x), this.ys(y));
     }

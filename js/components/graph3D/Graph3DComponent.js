@@ -19,22 +19,43 @@ class Graph3DComponent extends Component{
                 wheel: (event) => this.wheel(event),
                 mouseMove: (event) => this.mouseMove(event),
                 mouseUp: () => this.mouseUp(),
-                mouseDown: () => this.mouseDown(),
+                mouseDown: (event) => this.mouseDown(event),
                 mouseLeave: () => this.mouseLeave()
             }
         });
+        
         this.graph3D = new Graph3D({
             WIN: this.WIN
         });
-
+        
         this.canRotate = false;
         this.dx = 0;
         this.dy = 0;
-        this.LIGHT = new Light(-40 , 2, 0, 25000);
-        this.figure = (new Figure()).cube();
+        this.LIGHT = new Light(-25 , 25, -25, 35000);
+        this.figures = [];
+        
+        this.addSubjects();
         this.render();
+        console.log(document)
+        
+        setInterval(() => {
+            // this.goAnimation();
+            this.rotateLight(0.01, this.LIGHT);
+            this.render();
+        }, 10);
+    }
+    
+    addSubjects(){
+        this.figures.push((new Figure()).cube(0, 0, 0, 20));
+        this.figures.push((new Figure()).XYZ());
+        this.figures.push((new Figure()).sphere(10, 10, -10));
+        console.log('Figures', this.figures)
     }
 
+    rotateLight(alpha, point){
+        this.graph3D.rotateOx(alpha, point);
+    }
+    
     mouseLeave(){
         this.canRotate = false;
     }
@@ -50,49 +71,60 @@ class Graph3DComponent extends Component{
 	}
 
     mouseMove(event){
-        if (this.canRotate){
-            const gradus = Math.PI/180;
-            this.figure.points.forEach(point => {
-                this.graph3D.rotateOx((this.dx - event.offsetX)*gradus, point);
-                this.graph3D.rotateOy((this.dy - event.offsetY)*gradus, point);
-                // this.graph3D.rotateOz((this.dy - event.offsetY)*gradus, point);
-            });
-            this.dx = event.offsetX;
-            this.dy = event.offsetY;
-            this.render();
-        }
+            if (this.canRotate){
+                const gradus = Math.PI/540;
+                this.figures.forEach((figure) => {
+                    figure.points.forEach(point => {
+                    this.graph3D.rotateOx((this.dx - event.offsetX)*gradus, point);
+                    this.graph3D.rotateOy((this.dy - event.offsetY)*gradus, point);
+                    // this.graph3D.rotateOz((this.dy - event.offsetY)*gradus, point);
+                    });
+                });
+                this.dx = event.offsetX;
+                this.dy = event.offsetY;
+                this.render();
+            
+            };
 	}
 
     wheel(event){
         const delta = (event.wheelDelta > 0) ? 0.95 : 1.05;
-        this.figure.points.forEach(point =>
-            this.graph3D.zoom(delta, point));
-        this.render();
+        this.figures.forEach((figure) => {
+            figure.points.forEach(point =>
+                this.graph3D.zoom(delta, point));
+            this.render();
+        });
     }
 
-    render(){
-        this.canvas3d.clear('rgb(200, 200, 200)');
-        const figure = this.figure;
-        // отрисовка полигонов
-        // this.graph3D.calcDistance(this.figure, this.WIN.CAMERA, 'distance');
-        // this.graph3D.calcDistance(this.figure, this.LIGHT, 'lumen');
-        // this.graph3D.sortByArtist(this.figure);
-        // this.figure.polygons.forEach(polygon => {
-        //     const points = polygon.points.map(point => {
-        //         return {
-        //             x:this.graph3D.xs(this.figure.points[point]),
-        //             y:this.graph3D.ys(this.figure.points[point])
-        //         }});
-        //     const lumen = this.graph3D.calcIllumination(polygon.lumen,
-        //             this.LIGHT, lumen);
-        //     let{r, g, b} = polygon.color;
-        //     r = Math.round(r * lumen);
-        //     g = Math.round(g * lumen);
-        //     b = Math.round(b * lumen);
-        //     this.canvas.polygon(points, polygon.rgbToHex(r, g, b));
-        // });	
-        //...
-        // отрисовка ребер
+    // goAnimation(){
+    //     this.figures.forEach(figure => {
+    //         figure.animation.forEach(anim => {
+    //             const center = animation.center || figure.center;
+    //             this.graph3D.move(0, 0, 0, );//В центр, дописать
+    //             const matrix = this.graph3D[anim.method](anim.value);
+    //             figure.points.forEach(point => {
+    //                 this.graph3D.transform(matrix, point);
+    //                 move();//Обратно в цетнр фигуры
+    //             });
+    //         });
+    //     });
+    // }
+
+    goAnimation(){
+        this.figures.forEach(figure => {
+            figure.animation.forEach(anim => {
+                const center = figure.animation.center || figure.center;
+                this.graph3D.move(0, 0, 0, figure.center);//В центр, дописать
+                const matrix = this.graph3D[anim.method](anim.value, center);
+                figure.points.forEach(point => {
+                    this.graph3D.transform(matrix, point);
+                    move(center.x, center.y, center. z, point);//Обратно в цетнр фигуры
+                });
+            });
+        });
+    }
+
+    renderEdges(figure){
         figure.edges.forEach(edge => {
             const point1 = figure.points[edge.p1];
             const point2 = figure.points[edge.p2];
@@ -101,11 +133,48 @@ class Graph3DComponent extends Component{
                 this.graph3D.ys(point1),
                 this.graph3D.xs(point2),
                 this.graph3D.ys(point2),
+                'grey',
+                0.5,
+                1,
             );            
         });
-        // отрисовка точек
+    }
+
+    renderDots(figure){
+        let i = 0;
         figure.points.forEach(point => {
-            this.canvas3d.dot(this.graph3D.xs(point), this.graph3D.ys(point), 3, "black");
+            this.canvas3d.dot(this.graph3D.xs(point), this.graph3D.ys(point), 1, "red");
+            this.canvas3d.text(i, this.graph3D.xs(point), this.graph3D.ys(point) + 0.2, "red", "0px helvetica");
+            i++;
+        });
+    }
+
+    render(){
+        this.canvas3d.clear('rgb(00, 00, 00)');
+        this.figures.forEach((figure) => {
+            // отрисовка полигонов
+            this.graph3D.calcDistance(figure, this.WIN.CAMERA, 'distance');
+            this.graph3D.calcDistance(figure, this.LIGHT, 'lumen');
+
+            this.graph3D.sortByArtist(figure);
+            figure.polygons.forEach(polygon => {
+                const lumen = this.graph3D.calcIllumination(polygon.lumen, this.LIGHT.lumen);
+                const points = polygon.points.map(point => {
+                    return {
+                        x:this.graph3D.xs(figure.points[point]),
+                        y:this.graph3D.ys(figure.points[point])
+                    }});
+                let{r, g, b} = polygon.color;
+                r = Math.round(r * lumen);
+                g = Math.round(g * lumen);
+                b = Math.round(b * lumen);
+                this.canvas3d.polygon(points, polygon.rgbToHex(r, g, b));
+            });	
+            //...
+            // отрисовка ребер
+            this.renderEdges(figure);
+            // отрисовка точек
+            this.renderDots(figure);
         });
     }
 }
