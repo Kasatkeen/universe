@@ -2,11 +2,14 @@ Figure.prototype.sphere = (x = 0, y = 0, z = 0, radius = 4, step = 10) => {
     const points = [];
     const edges = [];
     const polygones = [];
-    const center = new Point(0, 0, 0);
+    const center = new Point(x, y, z);
     const animation = [{
-		method: 'rotateOy',
-		value: Math.PI / 1800, 
+		method: 'rotateOx',
+		value: Math.PI / 1800,
+        // center: new Point(center.x, center.y, center.z) 
+        center: new Point(0, 0, 0) 
 	}];
+    const name = 'Sphere';
 
     function createPointFromSpherical(radius, zenith, azimuth) {
         let x = radius * Math.sin(zenith) * Math.cos(azimuth);
@@ -124,5 +127,5 @@ Figure.prototype.sphere = (x = 0, y = 0, z = 0, radius = 4, step = 10) => {
     createPoints(x, y, z, radius, step);
     createEdges(step);
     createPolygons(step);
-    return new Subject(points, edges, polygones, center, animation);
+    return new Subject(points, edges, polygones, center, animation, name);
 }

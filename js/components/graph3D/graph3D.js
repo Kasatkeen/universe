@@ -25,8 +25,8 @@ class Graph3D {
         return c;
     } //T = [[],[],[],[]] m = [x, y, z, 1] возвращяет массив из 4-х эл.
 
-    transform(matrix, point){
-        this.multMatrix(matrix, point);
+    transform(method, value, point){
+        this.Graph3D[method](value, point);
     }
 
     zoom(delta, point){
@@ -41,7 +41,7 @@ class Graph3D {
         point.z = array[2];    
     }
 
-    move(x, y, z, point){
+    movePoint(x, y, z, point){
         const array = this.multMatrix([
             [1, 0, 0, x],
             [0, 1, 0, y],
@@ -51,6 +51,12 @@ class Graph3D {
         point.x = array[0];
         point.y = array[1];
         point.z = array[2];    
+    }
+
+    moveFigure(x, y, z, figure){
+        figure.points.forEach(point => {
+            this.movePoint(x, y, z, point);
+        })
     }
 
     rotateOx(alpha, point){

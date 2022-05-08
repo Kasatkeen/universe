@@ -31,14 +31,13 @@ Figure.prototype.cube = (x = 0, y = 0, z = 0, size = 20) => {
         new Polygon([0, 4, 7, 3], "#FFFFFF"),
         new Polygon([4, 7, 6, 5], "#FFFFFF"),
     ];
-
+    const name = 'Cube';
     const center = new Point(x, y, z);
-
     const animation = [{
-		method: 'rotateOy',
+		method: 'rotateOx',
 		value: Math.PI / 1800, 
-        center: new Point(center),
+        center: new Point(center.x, center.y, center.z),
 		//Значение свва метод должно совпадать с названием метода из graph3D
 	}];
-	return new Subject(points, edges, polygons, center, animation);
+	return new Subject(points, edges, polygons, center, animation, name);
 };

@@ -34,22 +34,22 @@ class Graph3DComponent extends Component{
         this.LIGHT = new Light(-25 , 25, -25, 35000);
         this.figures = [];
         
-        this.addSubjects();
+        this.addFigures();
         this.render();
-        console.log(document)
         
         setInterval(() => {
-            // this.goAnimation();
             this.rotateLight(0.01, this.LIGHT);
             this.render();
+            this.goAnimation();
         }, 10);
     }
     
-    addSubjects(){
+    addFigures(){
         this.figures.push((new Figure()).cube(0, 0, 0, 20));
-        this.figures.push((new Figure()).XYZ());
+        // this.figures.push((new Figure()).XYZ());
         this.figures.push((new Figure()).sphere(10, 10, -10));
-        console.log('Figures', this.figures)
+        // this.figures.push((new Figure()).cone());
+        this.figures.forEach(figure => {console.log(figure.name, figure)})
     }
 
     rotateLight(alpha, point){
@@ -79,11 +79,12 @@ class Graph3DComponent extends Component{
                     this.graph3D.rotateOy((this.dy - event.offsetY)*gradus, point);
                     // this.graph3D.rotateOz((this.dy - event.offsetY)*gradus, point);
                     });
+                    this.graph3D.rotateOx((this.dx - event.offsetX)*gradus, figure.center);
+                    this.graph3D.rotateOy((this.dy - event.offsetY)*gradus, figure.center);
                 });
                 this.dx = event.offsetX;
                 this.dy = event.offsetY;
                 this.render();
-            
             };
 	}
 
@@ -92,35 +93,8 @@ class Graph3DComponent extends Component{
         this.figures.forEach((figure) => {
             figure.points.forEach(point =>
                 this.graph3D.zoom(delta, point));
+            this.graph3D.zoom(delta, figure.center);
             this.render();
-        });
-    }
-
-    // goAnimation(){
-    //     this.figures.forEach(figure => {
-    //         figure.animation.forEach(anim => {
-    //             const center = animation.center || figure.center;
-    //             this.graph3D.move(0, 0, 0, );//В центр, дописать
-    //             const matrix = this.graph3D[anim.method](anim.value);
-    //             figure.points.forEach(point => {
-    //                 this.graph3D.transform(matrix, point);
-    //                 move();//Обратно в цетнр фигуры
-    //             });
-    //         });
-    //     });
-    // }
-
-    goAnimation(){
-        this.figures.forEach(figure => {
-            figure.animation.forEach(anim => {
-                const center = figure.animation.center || figure.center;
-                this.graph3D.move(0, 0, 0, figure.center);//В центр, дописать
-                const matrix = this.graph3D[anim.method](anim.value, center);
-                figure.points.forEach(point => {
-                    this.graph3D.transform(matrix, point);
-                    move(center.x, center.y, center. z, point);//Обратно в цетнр фигуры
-                });
-            });
         });
     }
 
@@ -136,10 +110,10 @@ class Graph3DComponent extends Component{
                 'grey',
                 0.5,
                 1,
-            );            
-        });
-    }
-
+                );            
+            });
+        }
+        
     renderDots(figure){
         let i = 0;
         figure.points.forEach(point => {
@@ -149,14 +123,27 @@ class Graph3DComponent extends Component{
         });
     }
 
+    goAnimation(){
+        this.figures.forEach(figure => {
+            figure.animation.forEach(anim => {
+                const center = anim.center || figure.center;
+                this.graph3D.moveFigure(-center.x, -center.y, -center.z, figure);//В центр, дописать
+                figure.points.forEach(point => {
+                    this.graph3D[anim.method](anim.value, point);
+                });
+                this.graph3D.moveFigure(center.x, center.y, center.z, figure);//Обратно в центр фигуры
+            });
+        });
+    }
+
     render(){
         this.canvas3d.clear('rgb(00, 00, 00)');
         this.figures.forEach((figure) => {
             // отрисовка полигонов
             this.graph3D.calcDistance(figure, this.WIN.CAMERA, 'distance');
             this.graph3D.calcDistance(figure, this.LIGHT, 'lumen');
-
             this.graph3D.sortByArtist(figure);
+            
             figure.polygons.forEach(polygon => {
                 const lumen = this.graph3D.calcIllumination(polygon.lumen, this.LIGHT.lumen);
                 const points = polygon.points.map(point => {
@@ -170,7 +157,6 @@ class Graph3DComponent extends Component{
                 b = Math.round(b * lumen);
                 this.canvas3d.polygon(points, polygon.rgbToHex(r, g, b));
             });	
-            //...
             // отрисовка ребер
             this.renderEdges(figure);
             // отрисовка точек
