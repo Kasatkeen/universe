@@ -61,9 +61,9 @@ class Graph3D {
 
     rotateOx(alpha, point){
         const array = this.multMatrix([
-            [Math.cos(alpha), 0, Math.sin(alpha), 0],
-            [0, 1, 0, 0],
-            [-Math.sin(alpha), 0, Math.cos(alpha), 0],
+            [1, 0, 0, 0],
+            [0, Math.cos(alpha), -Math.sin(alpha), 0],
+            [0, Math.sin(alpha), Math.cos(alpha), 0],
             [0, 0, 0, 1]
         ],
         [point.x, point.y, point.z, 1]
@@ -75,9 +75,9 @@ class Graph3D {
 
     rotateOy(alpha, point){   
         const array = this.multMatrix([
-            [1, 0, 0, 0],
-            [0, Math.cos(alpha), -Math.sin(alpha), 0],
-            [0, Math.sin(alpha), Math.cos(alpha), 0],
+            [Math.cos(alpha), 0, Math.sin(alpha), 0],
+            [0, 1, 0, 0],
+            [-Math.sin(alpha), 0, Math.cos(alpha), 0],
             [0, 0, 0, 1]
         ],
         [point.x, point.y, point.z, 1]

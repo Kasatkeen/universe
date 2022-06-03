@@ -1,106 +1,83 @@
-Figure.prototype.cone = (x = 0, y = 0, z = 0, r = 2, h = 5, steps = 10) => {
-    const points = [];
+Figure.prototype.cone = (xz = 5, y = 10, count = 20) => {
     const edges = [];
-    const polygones = [];
+    const points = [];
+    const polygons = [];
     const center = new Point(0, 0, 0);
     const animation = [{
-		method: 'rotateOy',
+		method: 'rotateOx',
 		value: Math.PI / 1800, 
         center: new Point(center.x, center.y, center.z),
 	}];
+    const upperBasePolygons = [];
+    const lowerBasePolygons = [];
+    const delta = 2 * Math.PI / count;
 
-    function createPoints() {
-        points.push(new Point(x, y, z));
-        for (let i = 0; i < h; i += h / steps) {
-            for (let j = 0; j < Math.PI * 2; j += Math.PI * 2 / steps) {
-                const radius = r * (1 - i / h);
-                const px = radius * Math.cos(j);
-                const py = radius * Math.sin(j);
-                points.push(new Point(x + px, y + py, z + i));
+    //points
+    for (let i = 0; i < 2 * Math.PI; i += delta) {
+        for (let j = 0; j < 2 * Math.PI; j += delta) {
+            points.push(new Point(
+                xz * i * Math.sin(j),
+                y * i,
+                xz * i * Math.cos(j)
+            ));
+        }
+    }
+    for (let i = 0; i < 2 * Math.PI; i += delta) {
+        for (let j = 0; j < 2 * Math.PI; j += delta) {
+            points.push(new Point(
+                xz * i * Math.sin(j),
+                -y * i,
+                xz * i * Math.cos(j)
+            ));
+        }
+    }
+
+    //edges
+    for (let i = points.length / 2; i < points.length; i++) {
+        if (points[i + 1]) {
+            if ((i + 1) % count === 0) {
+                edges.push(new Edge(i, i + 1 - count));
+            } else {
+                edges.push(new Edge(i, i + 1));
             }
         }
-        points.push(new Point(x, y, z + h));
-    }
-
-    function createBaseEdges() {
-        for (let i = 1; i <= steps; ++i) {
-            edges.push(new Edge(0, i));
+        if (points[i + count]) {
+            edges.push(new Edge(i, i + count));
         }
-        for (let i = 1; i < steps; ++i) {
-            edges.push(new Edge(i, i + 1));
-        }
-        edges.push(new Edge(1, steps));
     }
-
-    function createVertEdges() {
-        for (let i = 1; i <= steps; ++i) {
-            for (let j = 0; j < steps - 1; ++j) {
-                let a = i + j * steps;
-                let b = i + (j + 1) * steps;
-                edges.push(new Edge(a, b));
+    for (let i = 0; i < points.length / 2; i++) {
+        if (points[i + 1]) {
+            if ((i + 1) % count === 0) {
+                edges.push(new Edge(i, i + 1 - count));
+            } else {
+                edges.push(new Edge(i, i + 1));
             }
         }
-    }
-
-    function createHorzEdges() {
-        for (let i = 0; i < steps; ++i) {
-            for (let j = 1; j < steps; ++j) {
-                let a = j + i * steps;
-                let b = (j + 1) + i * steps;
-                edges.push(new Edge(a, b));
-            }
-        }
-        for (let i = 0; i < steps; ++i) {
-            edges.push(new Edge(1 + steps * i, 10 + steps * i));
+        if (points[i + count]) {
+            edges.push(new Edge(i, i + count));
         }
     }
+    edges.push(new Edge(points.length - count, points.length - 1));
 
-    function createTopEdges() {
-        for (let i = 1; i <= steps; ++i) {
-            edges.push(new Edge(steps * steps + 1, steps * (steps - 1) + i));
+    //polygons
+    for (let i = 0; i < points.length / 2 - count; i++) {
+        if (points[i + count + 1]) {
+            if ((i + 1) % count === 0) {
+                polygons.push(new Polygon([i, i - count + 1, i + 1, i + count]));
+            } else
+                polygons.push(new Polygon([i, i + 1, i + count + 1, i + count]));
         }
     }
-
-    function createEdges() {
-        createBaseEdges();
-        createVertEdges();
-        createHorzEdges();
-        createTopEdges();
-    }
-
-    function createBasePolygons() {
-        for (let i = 1; i < steps; ++i) {
-            polygones.push(new Polygon([0, i, i + 1]));
-        }
-        polygones.push(new Polygon([0, 1, steps]));
-    }
-
-    function createTopPolygons() {
-        for (let i = 1; i < steps; ++i) {
-            polygones.push(new Polygon([steps * steps + 1, steps * (steps - 1) + i, steps * (steps - 1) + (i+1)]));
+    for (let i = points.length / 2; i < points.length; i++) {
+        if (points[i + count + 1]) {
+            if ((i + 1) % count === 0) {
+                polygons.push(new Polygon([i, i + count, i + 1, i - count + 1]));
+            } else
+                polygons.push(new Polygon([i, i + count, i + count + 1, i + 1]));
         }
     }
+    polygons.push(new Polygon([points.length - 1, points.length - count, points.length - 2 * count, points.length - count - 1]));
 
-    function createPolygons() {
-        createBasePolygons();
-        let quads = [];
-        for (let j = 0; j < steps; ++j) {
-            for (let i = 1; i < steps; ++i) {
-                quads.push([i, i+1, i + j * steps, (i+1) + j * steps]);
-            }
-        }
-        // unpack quads to triangles
-        quads.forEach((quad) => {
-            polygones.push(
-                new Polygon([quad[0], quad[1], quad[2]]),
-                new Polygon([quad[1], quad[2], quad[3]])
-            );
-        });
-        createTopPolygons();
-    }
 
-    createPoints();
-    createEdges();
-    createPolygons();
-    return new Subject(points, edges, polygones, center, animation);
-};
+    return new Subject(points, edges, polygons, center, animation, 'cone');
+}

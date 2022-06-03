@@ -34,7 +34,7 @@ Figure.prototype.cube = (x = 0, y = 0, z = 0, size = 20) => {
     const name = 'Cube';
     const center = new Point(x, y, z);
     const animation = [{
-		method: 'rotateOx',
+		method: 'rotateOy',
 		value: Math.PI / 1800, 
         center: new Point(center.x, center.y, center.z),
 		//Значение свва метод должно совпадать с названием метода из graph3D

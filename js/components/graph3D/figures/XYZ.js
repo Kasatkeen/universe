@@ -17,6 +17,7 @@ Figure.prototype.XYZ = () => {
 		value: Math.PI / 1800, 
 		//Значение свва метод должно совпадать с названием метода из graph3D
 	}];
+	const name = "XYZ";
 
-	return new Subject(points, edges, polygons, center, animation);
+	return new Subject(points, edges, polygons, center, animation, name);
 }

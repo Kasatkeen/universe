@@ -31,10 +31,10 @@ class Graph3DComponent extends Component{
         this.canRotate = false;
         this.dx = 0;
         this.dy = 0;
-        this.LIGHT = new Light(-25 , 25, -25, 35000);
+        this.LIGHT = new Light(25 , 25, -25, 35000);
         this.figures = [];
         
-        this.addFigures();
+        this.setFigures();
         this.render();
         
         setInterval(() => {
@@ -44,16 +44,27 @@ class Graph3DComponent extends Component{
         }, 10);
     }
     
-    addFigures(){
-        this.figures.push((new Figure()).cube(0, 0, 0, 20));
-        // this.figures.push((new Figure()).XYZ());
-        this.figures.push((new Figure()).sphere(10, 10, -10));
-        // this.figures.push((new Figure()).cone());
+    setFigures(){
+        // this.figures.push((new Figure()).cube(0, 0, 0, 20));
+        this.figures.push((new Figure()).XYZ());
+        // this.figures.push((new Figure()).sphere(10, 10, -10));
+        // this.figures.push((new Figure()).cone(1, 3, 20));
+        // this.figures.push((new Figure()).ellipsoid(10, 5, 10));
+        // this.figures.push((new Figure()).cylinder());
+        // this.figures.push((new Figure()).ring());
+        // this.figures.push((new Figure()).doubleHyperboloid());
+        // this.figures.push((new Figure()).ellipticalCylinder());
+        // this.figures.push((new Figure()).ellipticalParaboloid());
+        // this.figures.push((new Figure()).hyperbolicCylinder());
+        // this.figures.push((new Figure()).hyperbolicParaboloid());
+        // this.figures.push((new Figure()).parabolicCylinder());
+        this.figures.push((new Figure()).pyramida());
+        // this.figures.push((new Figure()).singleHyperboloid());
         this.figures.forEach(figure => {console.log(figure.name, figure)})
     }
 
     rotateLight(alpha, point){
-        this.graph3D.rotateOx(alpha, point);
+        this.graph3D.rotateOy(alpha, point);
     }
     
     mouseLeave(){
@@ -75,12 +86,13 @@ class Graph3DComponent extends Component{
                 const gradus = Math.PI/540;
                 this.figures.forEach((figure) => {
                     figure.points.forEach(point => {
-                    this.graph3D.rotateOx((this.dx - event.offsetX)*gradus, point);
-                    this.graph3D.rotateOy((this.dy - event.offsetY)*gradus, point);
-                    // this.graph3D.rotateOz((this.dy - event.offsetY)*gradus, point);
-                    });
-                    this.graph3D.rotateOx((this.dx - event.offsetX)*gradus, figure.center);
-                    this.graph3D.rotateOy((this.dy - event.offsetY)*gradus, figure.center);
+                    this.graph3D.rotateOy((this.dx - event.offsetX)*gradus, point);
+                    this.graph3D.rotateOx((this.dy - event.offsetY)*gradus, point);
+                    // this.graph3D.rotateOz((this.dy - event.offsetY)*gradus/2, point);
+                    // this.graph3D.rotateOz((this.dx - event.offsetX)*gradus/2, point);
+                });
+                    this.graph3D.rotateOy((this.dx - event.offsetX)*gradus, figure.center);
+                    this.graph3D.rotateOx((this.dy - event.offsetY)*gradus, figure.center);
                 });
                 this.dx = event.offsetX;
                 this.dy = event.offsetY;
@@ -118,7 +130,7 @@ class Graph3DComponent extends Component{
         let i = 0;
         figure.points.forEach(point => {
             this.canvas3d.dot(this.graph3D.xs(point), this.graph3D.ys(point), 1, "red");
-            this.canvas3d.text(i, this.graph3D.xs(point), this.graph3D.ys(point) + 0.2, "red", "0px helvetica");
+            this.canvas3d.text(i, this.graph3D.xs(point), this.graph3D.ys(point) + 0.2, "red", "5 px helvetica");
             i++;
         });
     }
